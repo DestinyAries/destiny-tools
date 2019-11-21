@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <!-- 对应pattern的msg -->
+    <!--<conversionRule conversionWord="msg" converterClass="com.destiny.log.filter.SensitiveDataConverter"/>-->
+    <!--<conversionRule conversionWord="msg" converterClass="com.destiny.log.filter.LogJSONConverter"/>-->
+    <conversionRule conversionWord="convertedMsg" converterClass="com.destiny.log.filter.CustomConverter"/>
+
+    <property name="log_path" value="/var/logs"/>
+    <property name="service_name" value="log-tool"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 不要加行号，会影响执行效率 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger{60} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- latest log in this file -->
+        <file>${log_path}/${service_name}/${service_name}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log_path}/${service_name}/${service_name}.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <!-- each file should be at most 100MB, keep 60 days worth of history, but at most 20GB -->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>365</maxHistory>
+            <totalSizeCap>50GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <jsonFactoryDecorator class="com.destiny.log.util.elk.JsonFactoryDecorator"/>
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                            "timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}",
+                            "level": "%level",
+                            "thread": "%thread",
+                            "class": "%logger{60}",
+                            "message": "%convertedMsg",
+                            "service_name": "${service_name}",
+                            "stack_trace": "%exception{10}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- 异步输出 -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+    <appender name="ASYNC_STD" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <!--<root level="DEBUG">-->
+        <!--<appender-ref ref="STDOUT"/>-->
+        <!--<appender-ref ref="FILE"/>-->
+    <!--</root>-->
+    <root level="INFO">
+        <!--<appender-ref ref="FILE"/>-->
+        <appender-ref ref="ASYNC"/>
+    </root>
+</configuration>
