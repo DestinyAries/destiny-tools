@@ -35,7 +35,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
 
     @Value("${swagger.enable}")
-    private boolean isSwaggerEnable;
+    private boolean isSwaggerEnable = false;
 
     @Bean
     public Docket buildSwagger() {
