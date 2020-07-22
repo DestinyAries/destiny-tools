@@ -3,10 +3,9 @@ package com.destiny.common.enumeration;
 /**
  * 全局业务码枚举
  * @Author Destiny
- * @Date 2018-05-21
+ * @Version 1.0.0
  */
 public enum GlobalServerCodeEnum implements ServerCode {
-
     /**
      * 0000 接口业务处理成功
      */
@@ -17,8 +16,7 @@ public enum GlobalServerCodeEnum implements ServerCode {
      */
     UNKNOWN_EXCEPTION("9999", "系统未知错误"),
 
-    //=================全局状态码=================
-
+    // =================全局状态码=================
     /**
      * 0001 请求参数非法
      */

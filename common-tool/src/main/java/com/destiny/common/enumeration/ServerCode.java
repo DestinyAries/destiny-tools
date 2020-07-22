@@ -3,7 +3,7 @@ package com.destiny.common.enumeration;
 /**
  * 服务码枚举接口
  * @Author Destiny
- * @Date 2018-05-21
+ * @Version 1.0.0
  */
 public interface ServerCode {
     /**

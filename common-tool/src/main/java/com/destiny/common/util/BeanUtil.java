@@ -1,7 +1,6 @@
 package com.destiny.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +8,10 @@ import java.util.List;
 /**
  * bean 工具类
  * @Author Destiny
- * @Date 2018-05-21
+ * @Version 1.0.0
  */
+@Slf4j
 public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
-    private static final Logger logger = LoggerFactory.getLogger(BeanUtil.class);
 
     /**
      * Bean 与 Bean 之间的 GETTER,SETTER 属性值拷贝
@@ -27,9 +26,9 @@ public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
             copyProperties(source, targetObj);
             return targetObj;
         } catch (InstantiationException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return null;
     }

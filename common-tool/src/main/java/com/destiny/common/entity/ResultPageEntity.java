@@ -1,5 +1,6 @@
 package com.destiny.common.entity;
 
+import com.destiny.common.constant.CommonConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,20 +8,11 @@ import java.util.List;
 
 /**
  * 分页实体
- * @Author linwanrong
- * @Date 2020/7/20 17:58
+ * @Author Destiny
+ * @Version 1.0.0
  */
 @Data
 public class ResultPageEntity<T> extends ResultListEntity<T> {
-    /**
-     * 默认分页大小
-     */
-    private static final int DEFAULT_PAGE_SIZE = 100;
-    /**
-     * 默认页码
-     */
-    private static final int DEFAULT_PAGE = 1;
-
     /**
      * 当前页
      */
@@ -72,27 +64,27 @@ public class ResultPageEntity<T> extends ResultListEntity<T> {
     @ApiModelProperty(value = "当前页面最后一个元素在数据库中的行号")
     private int endRow;
 
-//    //是否为第一页
-//    private boolean isFirstPage = false;
-//    //是否为最后一页
-//    private boolean isLastPage = false;
-//    //是否有前一页
-//    private boolean hasPreviousPage = false;
-//    //是否有下一页
-//    private boolean hasNextPage = false;
-//    //导航页码数
-//    private int navigatePages;
-//    //所有导航页号
-//    private int[] navigatepageNums;
-
     /**
-     * 开始记录 从第几条记录开始算
+     * ------- 暂时不开发下列参数到接口 -------
      */
-    @ApiModelProperty(value = "开始记录")
-    private Integer startIndex = Integer.valueOf(0);
+    //是否为第一页
+    private boolean isFirstPage = false;
+    //是否为最后一页
+    private boolean isLastPage = false;
+    //是否有前一页
+    private boolean hasPreviousPage = false;
+    //是否有下一页
+    private boolean hasNextPage = false;
+    //导航页码数
+    private int navigatePages;
+    //所有导航页号
+    private int[] navigatepageNums;
+
+    public ResultPageEntity() {
+    }
 
     public ResultPageEntity(long total, List<T> list) {
-        super(DEFAULT_PAGE, DEFAULT_PAGE_SIZE, total, list);
+        super(CommonConstant.DEFAULT_PAGE_NUM, CommonConstant.DEFAULT_PAGE_SIZE, total, list);
     }
 
     public ResultPageEntity(int pageNum, int pageSize, long total, List<T> list) {

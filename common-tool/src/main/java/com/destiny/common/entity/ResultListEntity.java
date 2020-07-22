@@ -3,7 +3,6 @@ package com.destiny.common.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -13,10 +12,10 @@ import java.util.List;
 /**
  * 列表响应实体（分页列表/单纯列表）
  * @Author Destiny
- * @Date 2020/7/20
+ * @Version 1.0.0
  */
 @ApiModel("列表结果")
-@EqualsAndHashCode(callSuper = true)
+//@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 @Data

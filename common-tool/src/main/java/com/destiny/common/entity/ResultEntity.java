@@ -1,5 +1,6 @@
 package com.destiny.common.entity;
 
+import com.alibaba.fastjson.JSONObject;
 import com.destiny.common.enumeration.GlobalServerCodeEnum;
 import com.destiny.common.enumeration.ServerCode;
 import com.destiny.common.util.BeanUtil;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * 接口响应实体
  * @Author Destiny
- * @Date 2018-05-21
+ * @Version 1.0.0
  */
 @ApiModel(description = "响应实体")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -36,20 +37,18 @@ public class ResultEntity<T> implements Serializable {
     private T data;
 
     /**
-     * 列表类型
-     * 1. 列表 ResultListEntity
-     * 2. 分页列表 ResultListEntity
+     * 单纯列表
+     * success(List<T> list) / success(String message, List<T> list)
      */
     @ApiModelProperty(value = "响应列表")
-    private ResultListEntity<T> list;
+    private List<T> list;
 
     /**
-     * 列表类型
-     * 1. 列表 ResultListEntity
-     * 2. 分页列表 ResultListEntity
+     * 需要分页的列表
+     * success(PageInfo pageInfo) / success(String message, PageInfo pageInfo)
      */
     @ApiModelProperty(value = "响应列表")
-    private ResultListEntity<T> pageList;
+    private ResultPageEntity<T> pageList;
 
     public ResultEntity() {
     }
@@ -76,16 +75,28 @@ public class ResultEntity<T> implements Serializable {
         this.data = result;
     }
 
-    public ResultEntity(ServerCode serverCode, ResultListEntity<T> list) {
+    public ResultEntity(ServerCode serverCode, List<T> list) {
         this.code = serverCode.getCode();
         this.msg = serverCode.getMsg();
         this.list = list;
     }
 
-    public ResultEntity(ServerCode serverCode, String message, ResultListEntity<T> list) {
+    public ResultEntity(ServerCode serverCode, String message, List<T> list) {
         this.code = serverCode.getCode();
         this.msg = message;
         this.list = list;
+    }
+
+    public ResultEntity(ServerCode serverCode, ResultPageEntity<T> pageList) {
+        this.code = serverCode.getCode();
+        this.msg = serverCode.getMsg();
+        this.pageList = pageList;
+    }
+
+    public ResultEntity(ServerCode serverCode, String message, ResultPageEntity<T> pageList) {
+        this.code = serverCode.getCode();
+        this.msg = message;
+        this.pageList = pageList;
     }
 
     public static ResultEntity success() {
@@ -109,23 +120,19 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public static <T> ResultEntity<T> success(List<T> list) {
-        list = CollectionUtils.isEmpty(list) ? Collections.EMPTY_LIST : list;
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, new ResultListEntity(list.size(), list));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, CollectionUtils.isEmpty(list) ? Collections.EMPTY_LIST : list);
     }
 
     public static <T> ResultEntity<T> success(String message, List<T> list) {
-        list = CollectionUtils.isEmpty(list) ? Collections.EMPTY_LIST : list;
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, new ResultListEntity(list.size(), list));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, CollectionUtils.isEmpty(list) ? Collections.EMPTY_LIST : list);
     }
 
     public static <T> ResultEntity success(PageInfo pageInfo) {
-        ResultPageEntity pageEntity = BeanUtil.copyBean(pageInfo, ResultPageEntity.class);
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, new ResultListEntity(pageEntity.getTotal(), pageEntity.getList()));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, ResultPageEntity.class));
     }
 
-    public static <T> ResultEntity success(String message, PageInfo pageInfo) {
-        ResultPageEntity pageEntity = BeanUtil.copyBean(pageInfo, ResultPageEntity.class);
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, new ResultListEntity(pageEntity.getTotal(), pageEntity.getList()));
+    public static <T> ResultEntity success(String message, PageInfo<T> pageInfo) {
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, ResultPageEntity.class));
     }
 
     /**
@@ -134,5 +141,9 @@ public class ResultEntity<T> implements Serializable {
      */
     public boolean isSuccess() {
         return GlobalServerCodeEnum.SUCCESS.getCode().equals(this.code);
+    }
+
+    public String toJSONString() {
+        return JSONObject.toJSONString(this);
     }
 }
