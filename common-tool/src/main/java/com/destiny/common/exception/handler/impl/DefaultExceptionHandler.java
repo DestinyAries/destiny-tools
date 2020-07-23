@@ -6,7 +6,7 @@ import com.destiny.common.exception.handler.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 默认异常处理器
+ * A Default Exception Handler for Web Application
  * @Author Destiny
  * @Version 1.0.0
  */
@@ -20,7 +20,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public ResultEntity handle(Exception e) {
-        log.error("系统异常", e);
+        log.error("[Unknown Error]", e);
         return new ResultEntity(GlobalServerCodeEnum.UNKNOWN_EXCEPTION);
     }
 }

@@ -48,7 +48,7 @@ public class ResultEntity<T> implements Serializable {
      * success(PageInfo pageInfo) / success(String message, PageInfo pageInfo)
      */
     @ApiModelProperty(value = "响应列表")
-    private ResultPageEntity<T> pageList;
+    private PageResponse<T> pageList;
 
     public ResultEntity() {
     }
@@ -87,13 +87,13 @@ public class ResultEntity<T> implements Serializable {
         this.list = list;
     }
 
-    public ResultEntity(ServerCode serverCode, ResultPageEntity<T> pageList) {
+    public ResultEntity(ServerCode serverCode, PageResponse<T> pageList) {
         this.code = serverCode.getCode();
         this.msg = serverCode.getMsg();
         this.pageList = pageList;
     }
 
-    public ResultEntity(ServerCode serverCode, String message, ResultPageEntity<T> pageList) {
+    public ResultEntity(ServerCode serverCode, String message, PageResponse<T> pageList) {
         this.code = serverCode.getCode();
         this.msg = message;
         this.pageList = pageList;
@@ -128,11 +128,11 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public static <T> ResultEntity success(PageInfo pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, ResultPageEntity.class));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, PageResponse.class));
     }
 
     public static <T> ResultEntity success(String message, PageInfo<T> pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, ResultPageEntity.class));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, PageResponse.class));
     }
 
     /**

@@ -3,7 +3,7 @@ package com.destiny.common.exception.handler;
 import com.destiny.common.entity.ResultEntity;
 import com.destiny.common.exception.handler.impl.DefaultExceptionHandler;
 import com.destiny.common.exception.handler.impl.MethodArgumentNotValidExceptionHandler;
-import com.destiny.common.exception.handler.impl.RequestExceptionHandler;
+import com.destiny.common.exception.handler.impl.RequestParamBindExceptionHandler;
 import com.destiny.common.exception.handler.impl.ServiceExceptionHandler;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class ExceptionHandleContext {
 
     private void initDefaultHandler() {
         handlers.add(new ServiceExceptionHandler());
-        handlers.add(new RequestExceptionHandler());
+        handlers.add(new RequestParamBindExceptionHandler());
         handlers.add(new MethodArgumentNotValidExceptionHandler());
 
         this.defaultExceptionHandler = new DefaultExceptionHandler();

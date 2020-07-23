@@ -19,4 +19,8 @@ public interface ServerCode {
      * @return
      */
     String getMsg();
+
+    default String toStr() {
+        return String.format("code:%s|message:%s", getCode(), getMsg());
+    }
 }

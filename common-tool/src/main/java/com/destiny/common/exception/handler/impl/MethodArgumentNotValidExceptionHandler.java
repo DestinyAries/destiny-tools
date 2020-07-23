@@ -10,7 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 /**
- * 参数校验异常处理器
+ * Exception to be thrown when validation on an argument annotated with {@code @Valid} fails.
  * @Author Destiny
  * @Version 1.0.0
  */
@@ -29,7 +29,8 @@ public class MethodArgumentNotValidExceptionHandler implements ExceptionHandler 
         MethodArgumentNotValidException ex = (MethodArgumentNotValidException) e;
         BindingResult bindingResult = ex.getBindingResult();
         String methodName = ex.getParameter().getDeclaringClass().getName() + ex.getParameter().getExecutable().getName();
-        log.warn(String.format("%s: 请求参数校验失败: %s", methodName, RequestExceptionHandler.getBindResultErrorJson(bindingResult)), ex);
+        log.warn("[Validation Error] - [{}] - [{}]", methodName, RequestParamBindExceptionHandler.getBindErrorInfo(bindingResult));
         return new ResultEntity(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL);
     }
+
 }

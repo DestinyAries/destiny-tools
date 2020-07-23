@@ -12,7 +12,7 @@ import java.util.List;
  * @Version 1.0.0
  */
 @Data
-public class ResultPageEntity<T> extends ResultListEntity<T> {
+public class PageResponse<T> extends BaseListResponse<T> {
     /**
      * 当前页
      */
@@ -80,14 +80,14 @@ public class ResultPageEntity<T> extends ResultListEntity<T> {
     //所有导航页号
     private int[] navigatepageNums;
 
-    public ResultPageEntity() {
+    public PageResponse() {
     }
 
-    public ResultPageEntity(long total, List<T> list) {
+    public PageResponse(long total, List<T> list) {
         super(CommonConstant.DEFAULT_PAGE_NUM, CommonConstant.DEFAULT_PAGE_SIZE, total, list);
     }
 
-    public ResultPageEntity(int pageNum, int pageSize, long total, List<T> list) {
+    public PageResponse(int pageNum, int pageSize, long total, List<T> list) {
         super(pageNum, pageSize, total, list);
     }
 

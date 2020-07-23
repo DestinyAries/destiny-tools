@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 列表响应实体（分页列表/单纯列表）
+ * 列表响应实体 - 用于分页响应
+ * Use to {@link PageResponse}
  * @Author Destiny
  * @Version 1.0.0
  */
@@ -19,7 +20,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @Data
-public class ResultListEntity<T> implements Serializable {
+public class BaseListResponse<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("总记录数")
@@ -28,12 +29,12 @@ public class ResultListEntity<T> implements Serializable {
     @ApiModelProperty("结果列表")
     private List<T> list;
 
-    public ResultListEntity(long total, List<T> list) {
+    public BaseListResponse(long total, List<T> list) {
         this.total = total;
         this.list = list;
     }
 
-    public ResultListEntity(int pageNum, int pageSize, long total, List<T> list) {
+    public BaseListResponse(int pageNum, int pageSize, long total, List<T> list) {
         this.total = total;
         this.list = list;
     }

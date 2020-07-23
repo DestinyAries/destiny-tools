@@ -21,7 +21,7 @@ public class ServiceExceptionHandler implements ExceptionHandler {
     @Override
     public ResultEntity handle(Exception e) {
         ServiceException serviceException = (ServiceException) e;
-        log.warn("业务异常[{}]", serviceException.getServerCode());
+        log.warn("[Logical Service Error] - [{}]", serviceException.getServerCode().toStr());
         return new ResultEntity(serviceException.getServerCode());
     }
 }
