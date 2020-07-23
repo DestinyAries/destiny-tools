@@ -85,7 +85,7 @@ public class LogParamEntity {
      */
     public static String phone(String phone) {
         return StrUtil.isBlank(phone) ? ""
-                : DesensitizationUtil.convertMessage(phone, false, SensitiveDataTypeEnum.PHONE);
+                : DesensitizationUtil.convertValue(phone, SensitiveDataTypeEnum.PHONE);
     }
 
     /**
@@ -95,7 +95,7 @@ public class LogParamEntity {
      */
     public static String bankCard(String bankCard) {
         return StrUtil.isBlank(bankCard) ? ""
-                : DesensitizationUtil.convertMessage(bankCard, false, SensitiveDataTypeEnum.BANK_CARD);
+                : DesensitizationUtil.convertValue(bankCard, SensitiveDataTypeEnum.BANK_CARD);
     }
 
     /**
@@ -105,7 +105,7 @@ public class LogParamEntity {
      */
     public static String idCard(String idCard) {
         return StrUtil.isBlank(idCard) ? ""
-                : DesensitizationUtil.convertMessage(idCard, false, SensitiveDataTypeEnum.ID_CARD);
+                : DesensitizationUtil.convertValue(idCard, SensitiveDataTypeEnum.ID_CARD);
     }
 
     /**
@@ -115,7 +115,7 @@ public class LogParamEntity {
      */
     public static String cnName(String cnName) {
         return StrUtil.isBlank(cnName) ? ""
-                : DesensitizationUtil.convertMessage(cnName, false, SensitiveDataTypeEnum.CN_NAME);
+                : DesensitizationUtil.convertValue(cnName, SensitiveDataTypeEnum.CN_NAME);
     }
 
     /**
@@ -125,7 +125,7 @@ public class LogParamEntity {
      */
     public static String vCodeNum6(String code) {
         return StrUtil.isBlank(code) ? ""
-                : DesensitizationUtil.convertMessage(code, false, SensitiveDataTypeEnum.V_CODE_NUM_6);
+                : DesensitizationUtil.convertValue(code, SensitiveDataTypeEnum.V_CODE_NUM_6);
     }
 
     /**

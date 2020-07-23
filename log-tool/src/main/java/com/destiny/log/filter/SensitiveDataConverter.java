@@ -27,6 +27,6 @@ public class SensitiveDataConverter extends MessageConverter {
             }
         }
         // 强匹配模式日志数据脱敏
-        return DesensitizationUtil.convertMessage(StrUtil.format(event.getMessage(), newArguments));
+        return DesensitizationUtil.convertContext(StrUtil.format(event.getMessage(), newArguments));
     }
 }

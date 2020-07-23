@@ -14,87 +14,68 @@ import java.lang.reflect.Field;
  * @Date 2019/9/12
  */
 public class DesensitizationUtil {
+    /**
+     * 屏蔽符 - 星号
+     */
+    private static final char SHIELD_SYMBOL =  '*';
+    /**
+     * SensitiveDataTypeEnum.formatRule's '{'
+     */
+    private static final char DATA_FORMAT_RULE_MATCH_LEFT =  '{';
+    /**
+     * SensitiveDataTypeEnum.formatRule's '}'
+     */
+    private static final char DATA_FORMAT_RULE_MATCH_RIGHT =  '}';
 
     /**
      * 全文数据脱敏 - 强匹配
-     * @param message
+     * @param text
      * @return
      */
-    public static String convertMessage(String message) {
-        return StrUtil.isBlank(message) ? message
-                : ridSensitiveData(message, 0, SensitiveDataTypeEnum.values().length);
+    public static String convertContext(final String text) {
+        if (StrUtil.isBlank(text))
+            return text;
+
+        String handledText = text;
+        for (SensitiveDataTypeEnum typeEnum : SensitiveDataTypeEnum.values()) {
+            handledText = convertText(handledText, typeEnum);
+        }
+        return handledText;
     }
 
     /**
-     * 单类型数据脱敏 - 指定枚举(默认强匹配)
-     * @param message
+     * 指定枚举进行单类型数据 - 值脱敏
+     * @param originMsg
      * @param typeEnum
      * @return
      */
-    public static String convertMessage(String message, SensitiveDataTypeEnum typeEnum) {
-        return StrUtil.isBlank(message) || null == typeEnum ? message
-                : ridSensitiveDataByEnum(message, typeEnum, true);
+    public static String convertValue(final String originMsg, final SensitiveDataTypeEnum typeEnum) {
+        return StrUtil.isBlank(originMsg) || null == typeEnum ? originMsg :
+                ReUtil.replaceAll(originMsg, typeEnum.getRegexRule(), matcher -> {
+                    if (originMsg.length() > matcher.group().length())
+                        return matcher.group();
+                    return DesensitizationUtil.starDataByRule(matcher.group(), typeEnum.getHeadKeepLength(),
+                            typeEnum.getTailKeepLength()
+                    );
+                });
     }
 
     /**
-     * 单类型数据脱敏 - 指定枚举、匹配强度
-     * @param message
-     * @param isNumberForceMatch true: 强匹配; false: 弱匹配
+     * 指定枚举进行单类型数据 - 文本脱敏
+     * @param originMsg
      * @param typeEnum
      * @return
      */
-    public static String convertMessage(String message, boolean isNumberForceMatch, SensitiveDataTypeEnum typeEnum) {
-        return StrUtil.isBlank(message) || null == typeEnum ? message
-                : ridSensitiveDataByEnum(message, typeEnum, isNumberForceMatch);
-    }
-
-    /**
-     * 全文数据脱敏 - 默认强匹配数据（因为弱匹配在全文脱敏无意义）
-     * 1. 手机号 - @phone:13112341234@
-     * 2. 身份证号 - @idCard:11010120100307889X@
-     * 3. 银行卡号 - @bankCard:6222600260001072444@
-     * 4. 姓名 - @cnName:张三@
-     * @param originMsg
-     * @param currentIndex
-     * @param enumSize
-     * @return
-     */
-    public static String ridSensitiveData(String originMsg, int currentIndex, int enumSize) {
-        if (currentIndex < 0 || SensitiveDataTypeEnum.values().length < enumSize)
-            return originMsg;
-
-        return currentIndex > enumSize - 1 ? originMsg
-                : ridSensitiveData(
-                        ridSensitiveDataByEnum(
-                                originMsg, SensitiveDataTypeEnum.values()[currentIndex], true),
-                currentIndex + 1, enumSize);
-    }
-
-    /**
-     * 单类型数据脱敏 - 指定枚举、匹配强度
-     * @param originMsg
-     * @param currentTypeEnum
-     * @param isNumberForceMatch
-     * @return
-     */
-    public static String ridSensitiveDataByEnum(String originMsg, SensitiveDataTypeEnum currentTypeEnum, boolean isNumberForceMatch) {
-        if (StrUtil.isBlank(originMsg) || null == currentTypeEnum)
-            return originMsg;
-
-        String regex = isNumberForceMatch
-                ? StrUtil.format(currentTypeEnum.getFormatRule(), currentTypeEnum.getRegexWeak())
-                : currentTypeEnum.getRegexWeak();
-
-        return ReUtil.replaceAll(originMsg, regex, matcher -> {
-            if (!isNumberForceMatch && originMsg.length() > matcher.group().length())
-                return matcher.group();
-
-            return starDataByRule(
-                    isNumberForceMatch ? getSensitiveDataByRule(matcher.group(), currentTypeEnum) : matcher.group(),
-                    currentTypeEnum.getHeadKeepLength(),
-                    currentTypeEnum.getTailKeepLength()
-            );
-        });
+    public static String convertText(String originMsg, SensitiveDataTypeEnum typeEnum) {
+        return StrUtil.isBlank(originMsg) || null == typeEnum ? originMsg :
+                ReUtil.replaceAll(originMsg,
+                        StrUtil.format(typeEnum.getFormatRule(), typeEnum.getRegexRule()),
+                        matcher -> DesensitizationUtil.starDataByRule(
+                                getSensitiveDataByRule(matcher.group(), typeEnum),
+                                typeEnum.getHeadKeepLength(),
+                                typeEnum.getTailKeepLength()
+                        )
+                );
     }
 
     /**
@@ -117,7 +98,7 @@ public class DesensitizationUtil {
                 // 格式化敏感数据
                 if (originValue instanceof String) {
                     String originValueStr = (String) originValue;
-                    String result = DesensitizationUtil.convertMessage(originValueStr, false, currentTypeEnum);
+                    String result = convertValue(originValueStr, currentTypeEnum);
                     if (!originValueStr.equals(result)) {
                         ReflectUtil.setFieldValue(value, field, result);
                     }
@@ -142,7 +123,7 @@ public class DesensitizationUtil {
         tailKeepLength = tailKeepLength < 0 ? 0 : tailKeepLength;
         StringBuilder builder = new StringBuilder(StrUtil.subWithLength(data, 0, headKeepLength));
         for (int i = 0; i < data.length() - headKeepLength - tailKeepLength; i++) {
-            builder.append("*");
+            builder.append(SHIELD_SYMBOL);
         }
         return builder.append(StrUtil.subSuf(data, data.length() - tailKeepLength)).toString();
     }
@@ -158,8 +139,8 @@ public class DesensitizationUtil {
         if (StrUtil.isBlank(sensitiveData) || null == currentTypeEnum || StrUtil.isBlank(currentTypeEnum.getFormatRule()))
             return sensitiveData;
 
-        int headMatch = StrUtil.indexOf(currentTypeEnum.getFormatRule(), '{');
-        int tailMatch = StrUtil.indexOf(currentTypeEnum.getFormatRule(), '}');
+        int headMatch = StrUtil.indexOf(currentTypeEnum.getFormatRule(), DATA_FORMAT_RULE_MATCH_LEFT);
+        int tailMatch = StrUtil.indexOf(currentTypeEnum.getFormatRule(), DATA_FORMAT_RULE_MATCH_RIGHT);
         if (headMatch <= 0 || tailMatch <= 0)
             return sensitiveData;
 

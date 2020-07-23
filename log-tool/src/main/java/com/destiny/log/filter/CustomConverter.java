@@ -27,7 +27,7 @@ public class CustomConverter extends MessageConverter {
             }
             LogJSONConverter jsonConverter = new LogJSONConverter();
             // JSON格式化 -> 数据脱敏
-            return DesensitizationUtil.convertMessage(jsonConverter.convert(event));
+            return DesensitizationUtil.convertContext(jsonConverter.convert(event));
         } catch (Exception e) {
             e.printStackTrace();
             return event.getFormattedMessage();

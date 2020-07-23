@@ -47,20 +47,20 @@ public enum SensitiveDataTypeEnum {
      */
     private int tailKeepLength;
     /**
-     * 正则 - 弱匹配
+     * 正则
      */
-    private String regexWeak;
+    private String regexRule;
     /**
-     * 强匹配格式
+     * 匹配格式
      */
     private String formatRule;
 
-    SensitiveDataTypeEnum(int id, String desc, int headKeepLength, int tailKeepLength, String regexWeak, String formatRule) {
+    SensitiveDataTypeEnum(int id, String desc, int headKeepLength, int tailKeepLength, String regexRule, String formatRule) {
         this.id = id;
         this.desc = desc;
         this.headKeepLength = headKeepLength;
         this.tailKeepLength = tailKeepLength;
-        this.regexWeak = regexWeak;
+        this.regexRule = regexRule;
         this.formatRule = formatRule;
     }
 
@@ -80,8 +80,8 @@ public enum SensitiveDataTypeEnum {
         return tailKeepLength;
     }
 
-    public String getRegexWeak() {
-        return regexWeak;
+    public String getRegexRule() {
+        return regexRule;
     }
 
     public String getFormatRule() {

@@ -1,7 +1,7 @@
 package com.destiny.log;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * 日志 脱敏+JSON化

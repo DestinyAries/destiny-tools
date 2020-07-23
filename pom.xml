@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -17,23 +16,36 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
-<!--        <module>swagger-tool</module>-->
-<!--        <module>kafka-tool</module>-->
         <module>common-tool</module>
+        <module>log-tool</module>
+<!--        <module>kafka-tool</module>-->
     </modules>
 
     <properties>
         <java.version>1.8</java.version>
+        <fastjson.version>1.2.29</fastjson.version>
+        <lombok.version>1.18.12</lombok.version>
         <hutool.version>4.6.4</hutool.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-            <version>${hutool.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
 
-    </dependencies>
-
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
