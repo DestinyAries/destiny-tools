@@ -28,6 +28,11 @@ public class ServiceException extends RuntimeException {
         this.serverCode = serverCode;
     }
 
+    public ServiceException(ServerCode serverCode, String message) {
+        super(message);
+        this.serverCode = serverCode;
+    }
+
     public ServiceException(ServerCode serverCode, Throwable t) {
         super(serverCode.getMsg(), t);
         this.serverCode = serverCode;

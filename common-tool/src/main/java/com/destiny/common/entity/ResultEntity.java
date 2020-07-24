@@ -111,6 +111,10 @@ public class ResultEntity<T> implements Serializable {
         return new ResultEntity(serverCode);
     }
 
+    public static ResultEntity failure(ServerCode serverCode, String message) {
+        return new ResultEntity(serverCode, message);
+    }
+
     public static <T> ResultEntity<T> success(T data) {
         return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, data);
     }
