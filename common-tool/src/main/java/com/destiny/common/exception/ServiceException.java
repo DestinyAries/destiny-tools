@@ -13,7 +13,7 @@ public class ServiceException extends RuntimeException {
     /**
      * 异常业务码
      */
-    ServerCode serverCode = GlobalServerCodeEnum.UNKNOWN_EXCEPTION;
+    ServerCode serverCode = GlobalServerCodeEnum.SERVICE_ERROR;
 
     public ServiceException(String message) {
         super(message);

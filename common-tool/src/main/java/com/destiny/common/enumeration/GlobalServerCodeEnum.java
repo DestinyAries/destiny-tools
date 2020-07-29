@@ -40,7 +40,12 @@ public enum GlobalServerCodeEnum implements ServerCode {
     /**
      * 0005 服务不可用
      */
-    SERVICE_NOT_AVAILABLE("0005", "服务不可用")
+    SERVICE_NOT_AVAILABLE("0005", "服务不可用"),
+
+    /**
+     * 0006 接口业务处理失败
+     */
+    SERVICE_ERROR("0006", "接口业务处理异常"),
     ;
 
     private String code;

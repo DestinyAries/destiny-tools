@@ -7,9 +7,14 @@ import com.destiny.common.entity.ResultEntity;
  * @Author Destiny
  * @Version 1.0.0
  */
-public interface ExceptionHandler {
+public interface ExceptionHandler<T extends Exception> {
 
-    Boolean supports(Exception e);
+    boolean isSupport(Exception exception);
 
-    ResultEntity handle(Exception e);
+    /**
+     * handle the Exception
+     * @param exception
+     * @return
+     */
+    ResultEntity handle(T exception);
 }

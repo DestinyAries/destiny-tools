@@ -34,8 +34,7 @@ public abstract class BaseResponseBodyAdvice implements ResponseBodyAdvice<Objec
                                   ServerHttpResponse serverHttpResponse) {
         if (serverHttpResponse instanceof ServletServerHttpResponse) {
             // 设置响应头 Content-Type: application/json;charset=UTF-8
-            ((ServletServerHttpResponse) serverHttpResponse).getHeaders()
-                    .set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
+            serverHttpResponse.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
         }
 
         if (returnValue == null) {
@@ -47,7 +46,7 @@ public abstract class BaseResponseBodyAdvice implements ResponseBodyAdvice<Objec
         }
         // 返回字符串特定处理
         if (returnValue instanceof String) {
-            return ResultEntity.success(returnValue).toJSONString();
+            return ResultEntity.success(returnValue).toString();
         }
         // list
         if (returnValue instanceof List) {

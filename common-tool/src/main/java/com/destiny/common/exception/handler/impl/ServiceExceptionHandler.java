@@ -11,17 +11,16 @@ import lombok.extern.slf4j.Slf4j;
  * @Version 1.0.0
  */
 @Slf4j
-public class ServiceExceptionHandler implements ExceptionHandler {
+public class ServiceExceptionHandler implements ExceptionHandler<ServiceException> {
 
     @Override
-    public Boolean supports(Exception e) {
+    public boolean isSupport(Exception e) {
         return e instanceof ServiceException;
     }
 
     @Override
-    public ResultEntity handle(Exception e) {
-        ServiceException serviceException = (ServiceException) e;
-        log.warn("[Logical Service Error] - [{}]", serviceException.getServerCode().toStr());
-        return new ResultEntity(serviceException.getServerCode());
+    public ResultEntity handle(ServiceException ex) {
+        log.warn("[Logical Service Error] - [{}]", ex.getServerCode().toStr());
+        return new ResultEntity(ex.getServerCode());
     }
 }

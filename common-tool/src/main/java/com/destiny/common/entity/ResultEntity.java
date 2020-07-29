@@ -1,6 +1,5 @@
 package com.destiny.common.entity;
 
-import com.alibaba.fastjson.JSONObject;
 import com.destiny.common.enumeration.GlobalServerCodeEnum;
 import com.destiny.common.enumeration.ServerCode;
 import com.destiny.common.util.BeanUtil;
@@ -24,7 +23,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class ResultEntity<T> implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "状态码")
@@ -51,6 +49,11 @@ public class ResultEntity<T> implements Serializable {
     private PageResponse<T> pageList;
 
     public ResultEntity() {
+    }
+
+    public ResultEntity(String code, String message) {
+        this.code = code;
+        this.msg = message;
     }
 
     public ResultEntity(ServerCode serverCode) {
@@ -111,6 +114,10 @@ public class ResultEntity<T> implements Serializable {
         return new ResultEntity(serverCode);
     }
 
+    public static ResultEntity failure(String code, String message) {
+        return new ResultEntity(code, message);
+    }
+
     public static ResultEntity failure(ServerCode serverCode, String message) {
         return new ResultEntity(serverCode, message);
     }
@@ -145,9 +152,5 @@ public class ResultEntity<T> implements Serializable {
      */
     public boolean isSuccess() {
         return GlobalServerCodeEnum.SUCCESS.getCode().equals(this.code);
-    }
-
-    public String toJSONString() {
-        return JSONObject.toJSONString(this);
     }
 }

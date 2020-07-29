@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
-    public Boolean supports(Exception e) {
+    public boolean isSupport(Exception e) {
         return true;
     }
 

@@ -36,9 +36,9 @@ public class ExceptionHandleContext {
     }
 
     private void initDefaultHandler() {
-        handlers.add(new ServiceExceptionHandler());
-        handlers.add(new RequestParamBindExceptionHandler());
         handlers.add(new MethodArgumentNotValidExceptionHandler());
+        handlers.add(new RequestParamBindExceptionHandler());
+        handlers.add(new ServiceExceptionHandler());
 
         this.defaultExceptionHandler = new DefaultExceptionHandler();
     }
@@ -50,7 +50,7 @@ public class ExceptionHandleContext {
      */
     public ResultEntity handle(Exception e) {
         for (ExceptionHandler handler : handlers) {
-            if (handler.supports(e)) {
+            if (handler.isSupport(e)) {
                 return handler.handle(e);
             }
         }
