@@ -4,16 +4,17 @@ import com.destiny.common.enumeration.GlobalServerCodeEnum;
 import com.destiny.common.enumeration.ServerCode;
 
 /**
- * 业务异常
+ * service exception
+ * use to server (handling client requests) when encounter some error that can be expected.
  * @Author Destiny
  * @Version 1.0.0
  */
 public class ServiceException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     /**
-     * 异常业务码
+     * Server Code
      */
-    ServerCode serverCode = GlobalServerCodeEnum.SERVICE_ERROR;
+    private ServerCode serverCode = GlobalServerCodeEnum.UNKNOWN_EXCEPTION;
 
     public ServiceException(String message) {
         super(message);
@@ -24,7 +25,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceException(ServerCode serverCode) {
-        super(serverCode.getMsg());
+        super(serverCode.getMessage());
         this.serverCode = serverCode;
     }
 
@@ -34,7 +35,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceException(ServerCode serverCode, Throwable t) {
-        super(serverCode.getMsg(), t);
+        super(serverCode.getMessage(), t);
         this.serverCode = serverCode;
     }
 

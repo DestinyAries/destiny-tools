@@ -12,9 +12,9 @@ public enum GlobalServerCodeEnum implements ServerCode {
     SUCCESS("0000", "接口业务处理成功"),
 
     /**
-     * 9999 系统未知错误
+     * 9999 系统未知异常
      */
-    UNKNOWN_EXCEPTION("9999", "系统未知错误"),
+    UNKNOWN_EXCEPTION("9999", "未知异常"),
 
     // =================全局状态码=================
     /**
@@ -23,29 +23,30 @@ public enum GlobalServerCodeEnum implements ServerCode {
     REQUEST_PARAM_ILLEGAL("0001", "请求参数非法"),
 
     /**
-     * 0002 请求验签异常
+     * 0002 请求的签名异常
      */
-    REQUEST_SIGNED_INVALID("0002", "请求验签异常"),
+    REQUEST_SIGNATURE_ERROR("0002", "请求的签名异常"),
 
     /**
-     * 0003 请求数据解密异常
+     * 0003 未被授权
      */
-    REQUEST_DECRYPT_INVALID("0003", "请求数据解密异常"),
+    REQUEST_UNAUTHORIZED("0003", "未被授权"),
 
     /**
-     * 0004 对象不存在
+     * 0004 接口业务处理异常
      */
-    OBJECT_NOT_EXIST("0004", "对象不存在"),
+    API_HANDLE_EXCEPTION("0004", "接口异常，请联系管理员"),
 
     /**
-     * 0005 服务不可用
+     * 0005 服务配置异常
      */
-    SERVICE_NOT_AVAILABLE("0005", "服务不可用"),
+    CONFIGURATION_EXCEPTION("0005", "服务配置异常"),
 
     /**
-     * 0006 接口业务处理失败
+     * 0006 对象不存在
      */
-    SERVICE_ERROR("0006", "接口业务处理异常"),
+    OBJECT_NOT_EXIST("0006", "对象不存在"),
+
     ;
 
     private String code;
@@ -63,7 +64,8 @@ public enum GlobalServerCodeEnum implements ServerCode {
     }
 
     @Override
-    public String getMsg() {
+    public String getMessage() {
         return msg;
     }
+
 }

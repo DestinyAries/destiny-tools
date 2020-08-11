@@ -1,6 +1,7 @@
 package com.destiny.common.entity;
 
 import com.destiny.common.constant.CommonConstant;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,8 +12,9 @@ import java.util.List;
  * @Author Destiny
  * @Version 1.0.0
  */
+@ApiModel(value = "分页实体")
 @Data
-public class PageResponse<T> extends BaseListResponse<T> {
+public class PageEntity<T> {
     /**
      * 当前页
      */
@@ -64,31 +66,26 @@ public class PageResponse<T> extends BaseListResponse<T> {
     @ApiModelProperty(value = "当前页面最后一个元素在数据库中的行号")
     private int endRow;
 
-    /**
-     * ------- 暂时不开发下列参数到接口 -------
-     */
-    //是否为第一页
-    private boolean isFirstPage = false;
-    //是否为最后一页
-    private boolean isLastPage = false;
-    //是否有前一页
-    private boolean hasPreviousPage = false;
-    //是否有下一页
-    private boolean hasNextPage = false;
-    //导航页码数
-    private int navigatePages;
-    //所有导航页号
-    private int[] navigatepageNums;
+    @ApiModelProperty("总记录数")
+    private long total;
 
-    public PageResponse() {
+    @ApiModelProperty("结果列表")
+    private List<T> list;
+
+    public PageEntity() {
     }
 
-    public PageResponse(long total, List<T> list) {
-        super(CommonConstant.DEFAULT_PAGE_NUM, CommonConstant.DEFAULT_PAGE_SIZE, total, list);
+    public PageEntity(long total, List<T> list) {
+        this.pageNum = CommonConstant.DEFAULT_PAGE_NUM;
+        this.pageSize = CommonConstant.DEFAULT_PAGE_SIZE;
+        this.total = total;
+        this.list = list;
     }
 
-    public PageResponse(int pageNum, int pageSize, long total, List<T> list) {
-        super(pageNum, pageSize, total, list);
+    public PageEntity(int pageNum, int pageSize, long total, List<T> list) {
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.total = total;
+        this.list = list;
     }
-
 }

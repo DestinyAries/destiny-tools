@@ -3,8 +3,9 @@ package com.destiny.common.exception;
 import com.destiny.common.enumeration.ServerCode;
 
 /**
- * @Author linwanrong
- * @Date 2020/7/29 21:24
+ * LocalServerCodeEnum for Test
+ * @Author Destiny
+ * @Version 1.0.0
  */
 public enum LocalServerCodeEnum implements ServerCode {
     OP_CREATE_ERROR("2020", "failure to adding a record"),
@@ -25,7 +26,7 @@ public enum LocalServerCodeEnum implements ServerCode {
     }
 
     @Override
-    public String getMsg() {
+    public String getMessage() {
         return this.msg;
     }
 }

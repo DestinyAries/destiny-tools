@@ -1,12 +1,15 @@
 package com.destiny.common.exception;
 
+import com.destiny.common.entity.BeanForTest;
+import com.destiny.common.entity.HttpResponseEntity;
 import com.destiny.common.entity.ResultEntity;
 import com.destiny.common.enumeration.GlobalServerCodeEnum;
-import com.destiny.common.exception.handler.ExceptionHandleContext;
-import com.github.pagehelper.PageInfo;
+import com.destiny.common.exception.handler.ExceptionHandlerContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.test.util.AssertionErrors;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,30 +18,29 @@ import javax.xml.bind.ValidationException;
 import java.lang.reflect.Method;
 
 /**
+ * Tester for Exception Handlers
  * @Author Destiny
  * @Version 1.0.0
  */
 public class ExceptionHandlerTest {
-    private ExceptionHandleContext exceptionHandleContext = new ExceptionHandleContext();
-
-    private final static String code = "2020";
+    private ExceptionHandlerContext exceptionHandlerContext = new ExceptionHandlerContext();
 
     @Test
-    public void bindExceptionTest() {
+    public void requestBindExceptionTest() {
         BindException bindException = new BindException("target", "testObj");
-        ResultEntity resultEntity = exceptionHandleContext.handle(bindException);
-        System.out.println(resultEntity.toString());
-        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), resultEntity.getCode(),
-                "fit to the RequestParamBindExceptionHandler");
-        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMsg(), resultEntity.getMsg(),
-                "message error");
+        HttpResponseEntity<ResultEntity> responseEntity = exceptionHandlerContext.handle(bindException);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), responseEntity.getBody().getCode(),
+                "the result of server code error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMessage(), responseEntity.getBody().getMessage(),
+                "the result of message error");
     }
 
     @Test
-    public void requestParamsExceptionTest() {
+    public void requestMethodArgNotValidExceptionTest() {
         Method method = null;
         try {
-            method = ResultEntity.class.getDeclaredMethod("success", PageInfo.class);
+            method = BeanForTest.class.getDeclaredMethod("function", Integer.class, String.class);
         } catch (NoSuchMethodException e) {
             AssertionErrors.fail(e.getClass().getName() + " - " + e.getMessage());
         }
@@ -46,36 +48,67 @@ public class ExceptionHandlerTest {
             AssertionErrors.fail("method is null");
         }
         MethodParameter parameter = new MethodParameter(method, 0);
-        MethodArgumentNotValidException bindException = new MethodArgumentNotValidException(parameter, new BindException("target", "testObj").getBindingResult());
-        ResultEntity resultEntity = exceptionHandleContext.handle(bindException);
-        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), resultEntity.getCode(),
-                "fit to the MethodArgumentNotValidExceptionHandler");
-        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMsg(), resultEntity.getMsg(),
-                "message error");
+        MethodArgumentNotValidException bindException = new MethodArgumentNotValidException(parameter, new BindException("name", "BeanForTest").getBindingResult());
+        HttpResponseEntity<ResultEntity> responseEntity = exceptionHandlerContext.handle(bindException);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), responseEntity.getBody().getCode(),
+                "the result of server code error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMessage(), responseEntity.getBody().getMessage(),
+                "the result of message error");
+    }
+
+    @Test
+    public void requestValidationExceptionTest() {
+        ValidationException validationException = new ValidationException("some error in request validation", GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode());
+        HttpResponseEntity<ResultEntity> responseEntity = exceptionHandlerContext.handle(validationException);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), responseEntity.getBody().getCode(),
+                "the result of server code error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMessage(), responseEntity.getBody().getMessage(),
+                "the result of message error");
+    }
+
+    @Test
+    public void requestHttpMessageConversionExceptionTest() {
+        HttpMessageConversionException exception = new HttpMessageConversionException("some error in HttpMessageConversionException", new NullPointerException());
+        HttpResponseEntity<ResultEntity> responseEntity = exceptionHandlerContext.handle(exception);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getCode(), responseEntity.getBody().getCode(),
+                "the result of server code error");
+        Assertions.assertEquals(GlobalServerCodeEnum.REQUEST_PARAM_ILLEGAL.getMessage(), responseEntity.getBody().getMessage(),
+                "the result of message error");
     }
 
     @Test
     public void serviceExceptionTest() {
-        ResultEntity defaultError = exceptionHandleContext.handle(new ServiceException("error service"));
-        Assertions.assertEquals(GlobalServerCodeEnum.SERVICE_ERROR.getCode(), defaultError.getCode(),
+        HttpResponseEntity<ResultEntity> defaultError = exceptionHandlerContext.handle(new ServiceException("error service"));
+        Assertions.assertEquals(HttpStatus.OK, defaultError.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getCode(), defaultError.getBody().getCode(),
                 "[default code] fit to the ServiceExceptionHandler error");
-        Assertions.assertEquals(GlobalServerCodeEnum.SERVICE_ERROR.getMsg(), defaultError.getMsg(),
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getMessage(), defaultError.getBody().getMessage(),
                 "[default code] message error");
 
-        ResultEntity resultEntity = exceptionHandleContext.handle(new ServiceException(LocalServerCodeEnum.OP_CREATE_ERROR));
-        Assertions.assertEquals(LocalServerCodeEnum.OP_CREATE_ERROR.getCode(), resultEntity.getCode(),
+        HttpResponseEntity<ResultEntity> resultEntity = exceptionHandlerContext.handle(new ServiceException(LocalServerCodeEnum.OP_CREATE_ERROR));
+        Assertions.assertEquals(LocalServerCodeEnum.OP_CREATE_ERROR.getCode(), resultEntity.getBody().getCode(),
                 "[custom code] fit to the ServiceExceptionHandler error");
-        Assertions.assertEquals(LocalServerCodeEnum.OP_CREATE_ERROR.getMsg(), resultEntity.getMsg(),
+        Assertions.assertEquals(LocalServerCodeEnum.OP_CREATE_ERROR.getMessage(), resultEntity.getBody().getMessage(),
                 "[custom code] message error");
     }
 
     @Test
-    public void otherExceptionTest() {
-        ValidationException validationException = new ValidationException("test error validation", code);
-        ResultEntity resultEntity = exceptionHandleContext.handle(validationException);
-        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getCode(), resultEntity.getCode(),
-                "exception handle error when not fit the registered exception handles");
-        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getMsg(), resultEntity.getMsg(),
-                "message error");
+    public void defaultExceptionTest() {
+        HttpResponseEntity<ResultEntity> unknownError = exceptionHandlerContext.handle(new Exception("unknown error"));
+        Assertions.assertEquals(HttpStatus.OK, unknownError.getStatusCode(), "Status Code Error");
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getCode(), unknownError.getBody().getCode(),
+                "[default code] fit to the ServiceExceptionHandler error");
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getMessage(), unknownError.getBody().getMessage(),
+                "[default code] message error");
+
+        HttpResponseEntity<ResultEntity> resultEntity = exceptionHandlerContext.handle(new NullPointerException());
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getCode(), resultEntity.getBody().getCode(),
+                "[custom code] fit to the ServiceExceptionHandler error");
+        Assertions.assertEquals(GlobalServerCodeEnum.UNKNOWN_EXCEPTION.getMessage(), resultEntity.getBody().getMessage(),
+                "[custom code] message error");
     }
+
 }

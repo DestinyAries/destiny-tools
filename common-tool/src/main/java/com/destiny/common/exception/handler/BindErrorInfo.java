@@ -1,5 +1,6 @@
 package com.destiny.common.exception.handler;
 
+import com.destiny.common.constant.SymbolConstant;
 import lombok.Data;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -55,7 +56,7 @@ public class BindErrorInfo implements Serializable {
         bindingResult.getAllErrors().forEach(error -> {
             if (error instanceof FieldError) {
                 FieldError fieldError = (FieldError) error;
-                errorInfoList.add(new BindErrorInfo(fieldError.getObjectName() + "." + fieldError.getField(),
+                errorInfoList.add(new BindErrorInfo(fieldError.getObjectName() + SymbolConstant.POINT_CHAR + fieldError.getField(),
                         error.getDefaultMessage(), fieldError.getRejectedValue()));
             } else {
                 errorInfoList.add(new BindErrorInfo(error.getObjectName(), error.getDefaultMessage()));

@@ -15,90 +15,95 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 接口响应实体
+ * a result entity
+ *
+ * example:
+ * 1) Api -(package the result)-> ResultEntity -> HttpResponseEntity -> Response
+ * 2) Handler -(package the result)-> ResultEntity -> service
+ *
  * @Author Destiny
  * @Version 1.0.0
  */
-@ApiModel(description = "响应实体")
+@ApiModel(value = "the result entity of service handling")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class ResultEntity<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "状态码")
+    @ApiModelProperty(value = "the result status of handling")
     private String code;
 
-    @ApiModelProperty(value = "状态码描述")
-    private String msg;
+    @ApiModelProperty(value = "the result of handling")
+    private String message;
 
-    @ApiModelProperty(value = "响应实体")
+    @ApiModelProperty(value = "the data is handled and to be output")
     private T data;
 
     /**
-     * 单纯列表
+     * the list is handled and to be output
      * success(List<T> list) / success(String message, List<T> list)
      */
-    @ApiModelProperty(value = "响应列表")
+    @ApiModelProperty(value = "业务结果内容列表")
     private List<T> list;
 
     /**
-     * 需要分页的列表
+     * the page info is handled and to be output
      * success(PageInfo pageInfo) / success(String message, PageInfo pageInfo)
      */
-    @ApiModelProperty(value = "响应列表")
-    private PageResponse<T> pageList;
+    @ApiModelProperty(value = "业务结果内容分页列表")
+    private PageEntity<T> pageList;
 
     public ResultEntity() {
     }
 
-    public ResultEntity(String code, String message) {
-        this.code = code;
-        this.msg = message;
-    }
-
     public ResultEntity(ServerCode serverCode) {
         this.code = serverCode.getCode();
-        this.msg = serverCode.getMsg();
+        this.message = serverCode.getMessage();
+    }
+
+    public ResultEntity(String code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
     public ResultEntity(ServerCode serverCode, String message) {
         this.code = serverCode.getCode();
-        this.msg = message;
+        this.message = message;
     }
 
     public ResultEntity(ServerCode serverCode, T result) {
         this.code = serverCode.getCode();
-        this.msg = serverCode.getMsg();
+        this.message = serverCode.getMessage();
         this.data = result;
     }
 
     public ResultEntity(ServerCode serverCode, String message, T result) {
         this.code = serverCode.getCode();
-        this.msg = message;
+        this.message = message;
         this.data = result;
     }
 
     public ResultEntity(ServerCode serverCode, List<T> list) {
         this.code = serverCode.getCode();
-        this.msg = serverCode.getMsg();
+        this.message = serverCode.getMessage();
         this.list = list;
     }
 
     public ResultEntity(ServerCode serverCode, String message, List<T> list) {
         this.code = serverCode.getCode();
-        this.msg = message;
+        this.message = message;
         this.list = list;
     }
 
-    public ResultEntity(ServerCode serverCode, PageResponse<T> pageList) {
+    public ResultEntity(ServerCode serverCode, PageEntity<T> pageList) {
         this.code = serverCode.getCode();
-        this.msg = serverCode.getMsg();
+        this.message = serverCode.getMessage();
         this.pageList = pageList;
     }
 
-    public ResultEntity(ServerCode serverCode, String message, PageResponse<T> pageList) {
+    public ResultEntity(ServerCode serverCode, String message, PageEntity<T> pageList) {
         this.code = serverCode.getCode();
-        this.msg = message;
+        this.message = message;
         this.pageList = pageList;
     }
 
@@ -139,16 +144,16 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public static <T> ResultEntity success(PageInfo pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, PageResponse.class));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, PageEntity.class));
     }
 
     public static <T> ResultEntity success(String message, PageInfo<T> pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, PageResponse.class));
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, PageEntity.class));
     }
 
     /**
-     * 判断是否成功
-     * @return true or false
+     * check the result is success or not
+     * @return true-success; false-failure
      */
     public boolean isSuccess() {
         return GlobalServerCodeEnum.SUCCESS.getCode().equals(this.code);
