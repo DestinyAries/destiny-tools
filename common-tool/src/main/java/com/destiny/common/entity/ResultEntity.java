@@ -24,7 +24,7 @@ import java.util.List;
  * @Author Destiny
  * @Version 1.0.0
  */
-@ApiModel(value = "the result entity of service handling")
+@ApiModel(value = "ResultEntity", description = "the result entity of service handling")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class ResultEntity<T> implements Serializable {
