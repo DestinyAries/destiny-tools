@@ -2,8 +2,9 @@ package com.destiny.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * bean 工具类
@@ -41,10 +42,7 @@ public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
      * @return
      */
     public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
-        List<T> targets = new ArrayList<>(sources.size());
-        for (Object source : sources) {
-            targets.add(copyBean(source, targetClass));
-        }
-        return targets;
+        return sources.stream().map((Function<Object, T>) o -> BeanUtil.copyBean(o, targetClass))
+                .collect(Collectors.toList());
     }
 }

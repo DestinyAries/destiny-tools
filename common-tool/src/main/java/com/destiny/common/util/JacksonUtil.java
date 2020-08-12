@@ -1,6 +1,8 @@
 package com.destiny.common.util;
 
 import cn.hutool.core.util.StrUtil;
+import com.destiny.common.constant.SymbolConstant;
+import com.destiny.common.jackson.JacksonException;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -22,8 +24,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Jackson 工具类
@@ -101,19 +102,51 @@ public class JacksonUtil {
     }
 
     /**
+     * 是否为JSON字符串，首尾都为大括号或中括号判定为JSON字符串
+     *
+     * @param str 字符串
+     * @return 是否为JSON字符串
+     */
+    public static boolean isJson(String str) {
+        return isJsonObject(str) || isJsonArray(str);
+    }
+
+    /**
+     * 是否为JSONObject字符串，首尾都为大括号判定为JSONObject字符串
+     *
+     * @param string 字符串
+     * @return 是否为JSON字符串
+     */
+    public static boolean isJsonObject(String string) {
+        return StrUtil.isBlank(string) ? false :
+                StrUtil.isWrap(string.trim(), SymbolConstant.OPEN_BRACE_CHAR, SymbolConstant.CLOSE_BRACE_CHAR);
+    }
+
+    /**
+     * 是否为JSONArray字符串，首尾都为中括号判定为JSONArray字符串
+     *
+     * @param string 字符串
+     * @return 是否为JSON字符串
+     */
+    public static boolean isJsonArray(String string) {
+        return StrUtil.isBlank(string) ? false :
+                StrUtil.isWrap(string.trim(), SymbolConstant.OPEN_BRACKET_CHAR, SymbolConstant.CLOSE_BRACKET_CHAR);
+    }
+
+    /**
      * Parsing a JSON string to a Java object
      * @param json a JSON string
      * @param objectClass target Java object class
      * @return
      */
     public <T> T toObject(String json, Class<T> objectClass) {
-        Objects.requireNonNull(objectClass);
-        Objects.requireNonNull(json);
+        requireClassNonNull(objectClass);
+        requireJsonString(json);
         try {
             return getObjectMapper().readValue(json, objectClass);
         } catch (JsonProcessingException e) {
             log.error("fail to parsed a JSON string to a Java object", e);
-            throw new RuntimeException("fail to parsed a JSON string to a Java object", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
     }
 
@@ -124,76 +157,132 @@ public class JacksonUtil {
      * @return
      */
     public <T> T toObject(File jsonFile, Class<T> objectClass) {
-        if (jsonFile == null || !jsonFile.exists()) {
-            return null;
-        } else if (objectClass == null) {
-            throw new IllegalArgumentException("the objectClass is null");
-        }
+        requireClassNonNull(objectClass);
+        requireLegalFile(jsonFile);
         try {
             return getObjectMapper().readValue(jsonFile, objectClass);
-        } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
         } catch (IOException e) {
             log.error("fail to parsed a JSON string to a Java object", e);
+            throw JacksonException.throwWhenIOError(e);
         }
-        return null;
     }
 
     /**
      * Parsing a JSON array string to a Java object array
-     * @param jsonArray a File read from xxx.json
-     * @param objectClass target Java object class
+     * @param jsonArray a array json string
      * @return
      */
-    public <T> T[] toArray(String jsonArray, Class<T> objectClass) {
-        if (StrUtil.isEmpty(jsonArray)) {
-            return null;
-        } else if (objectClass == null) {
-            throw new IllegalArgumentException("the objectClass is null");
-        }
+    public Object[] toArray(String jsonArray) {
+        requireJsonArrayString(jsonArray);
         try {
-            return getObjectMapper().readValue(jsonArray, new TypeReference<T[]>(){});
+            return getObjectMapper().readValue(jsonArray, new TypeReference<Object[]>(){});
         } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
+            log.error("fail to parsed a JSON string to a Java array", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
-        return null;
+    }
+
+    /**
+     * Parsing a JSON array string to a Java string array
+     * @param jsonArray a array json string
+     * @return
+     */
+    public String[] toStringArray(String jsonArray) {
+        requireJsonArrayString(jsonArray);
+        try {
+            return getObjectMapper().readValue(jsonArray, new TypeReference<String[]>(){});
+        } catch (JsonProcessingException e) {
+            log.error("fail to parsed a JSON string to a string array", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
+        }
+    }
+
+    /**
+     * Parsing a JSON array string to a Java string array
+     * @param jsonArray a array json string
+     * @return
+     */
+    public Integer[] toIntegerArray(String jsonArray) {
+        requireJsonArrayString(jsonArray);
+        try {
+            return getObjectMapper().readValue(jsonArray, new TypeReference<Integer[]>(){});
+        } catch (JsonProcessingException e) {
+            log.error("fail to parsed a JSON string to a string array", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
+        }
+    }
+
+    /**
+     * Parsing a JSON array string to a Java map array
+     * @param jsonArray a array json string
+     * @return
+     */
+    public Map[] toMapArray(String jsonArray) {
+        requireJsonArrayString(jsonArray);
+        try {
+            return getObjectMapper().readValue(jsonArray, new TypeReference<Map[]>(){});
+        } catch (JsonProcessingException e) {
+            log.error("fail to parsed a JSON string to a map array", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
+        }
     }
 
     /**
      * Parsing a JSON array string to a Java object list
-     * @param jsonArray a File read from xxx.json
+     * @param jsonList a list json string
+     * @return
+     */
+    public List<Object> toList(String jsonList) {
+        requireJsonArrayString(jsonList);
+        try {
+            return getObjectMapper().readValue(jsonList, new TypeReference<List>(){});
+        } catch (JsonProcessingException e) {
+            log.error("fail to parsed a JSON string to a Java list", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
+        }
+    }
+
+    /**
+     * Parsing a JSON array string to a Java object list
+     * It will check the class type strict.
+     *
+     * @param jsonList a list json string
      * @param objectClass target Java object class
      * @return
      */
-    public <T> List<T> toList(String jsonArray, Class<T> objectClass) {
-        if (StrUtil.isEmpty(jsonArray)) {
-            return null;
-        } else if (objectClass == null) {
-            throw new IllegalArgumentException("the objectClass is null");
-        }
+    public <T> List<T> toList(String jsonList, Class<T> objectClass) {
+        requireClassNonNull(objectClass);
+        requireJsonArrayString(jsonList);
+        List list;
         try {
-            return getObjectMapper().readValue(jsonArray, new TypeReference<List<T>>(){});
+            list = getObjectMapper().readValue(jsonList, new TypeReference<List>(){});
         } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
+            log.error("fail to parsed a JSON string to a Java list", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
-        return null;
+        // check class type
+        if (list != null && list.stream().anyMatch(v -> !objectClass.isInstance(v))) {
+            log.error("class cast error. expected:[{}], actual:[{}]", objectClass.getName(),
+                    list.stream().map(v -> v.getClass().getName()).distinct().collect(Collectors.joining(SymbolConstant.COMMA)));
+            throw JacksonException.throwWhenClassCastError();
+        }
+        return (List<T>) list;
     }
+
 
     /**
      * Parsing a JSON string to a Map
      * @param json a JSON string
      * @return
      */
-    public Map<String, Object> toMap(String json) {
-        if (StrUtil.isEmpty(json)) {
-            return null;
-        }
+    public Map<Object, Object> toMap(String json) {
+        requireJsonObjectString(json);
         try {
-            return getObjectMapper().readValue(json, new TypeReference<Map<String, Object>>(){});
+            return getObjectMapper().readValue(json, new TypeReference<Map<Object, Object>>(){});
         } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
+            log.error("fail to parsed a JSON string to a Java Map", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
-        return null;
     }
 
     /**
@@ -205,9 +294,9 @@ public class JacksonUtil {
         try {
             return getObjectMapper().writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
+            log.error("fail to parsed a Java object to a JSON string", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
-        return "";
     }
 
     /**
@@ -220,72 +309,9 @@ public class JacksonUtil {
             String jsonString = getObjectMapper().writeValueAsString(object);
             return jsonString.substring(1, jsonString.length() - 1);
         } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
+            log.error("fail to parsed a Java object to a Java string", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
         }
-        return "";
-    }
-
-    /**
-     * Parsing a JSON string to a Optional that contain the Java object
-     * @param json a JSON string
-     * @param objectClass target Java object class
-     * @return
-     */
-    public <T> Optional<T> toOptionalObject(String json, Class<T> objectClass) {
-        return Optional.ofNullable(toObject(json, objectClass));
-    }
-
-    /**
-     * Parsing a JSON file to a Optional that contain the Java object
-     * @param jsonFile a File read from xxx.json
-     * @param objectClass target Java object class
-     * @return
-     */
-    public <T> Optional<T> toOptionalObject(File jsonFile, Class<T> objectClass) {
-        return Optional.ofNullable(toObject(jsonFile, objectClass));
-    }
-
-    /**
-     * Parsing a JSON array string to a Optional that contain the Java object array
-     * @param jsonArray a File read from xxx.json
-     * @param objectClass target Java object class
-     * @return
-     */
-    public <T> Optional<T[]> toOptionalArray(String jsonArray, Class<T> objectClass) {
-        return Optional.ofNullable(toArray(jsonArray, objectClass));
-    }
-
-    /**
-     * Parsing a JSON array string to a Optional that contain the Java object list
-     * @param jsonArray a File read from xxx.json
-     * @param objectClass target Java object class
-     * @return
-     */
-    public <T> Optional<List<T>> toOptionalList(String jsonArray, Class<T> objectClass) {
-        return Optional.ofNullable(toList(jsonArray, objectClass));
-    }
-
-    /**
-     * Parsing a JSON string to a Optional that contain the Map
-     * @param json a JSON string
-     * @return
-     */
-    public Optional<Map<String, Object>> toOptionalMap(String json) {
-        return Optional.ofNullable(toMap(json));
-    }
-
-    /**
-     * Parsing a Java object to a JSON string
-     * @param object
-     * @return {@link Optional}
-     */
-    public Optional<String> toOptionalJSON(Object object) {
-        try {
-            return Optional.ofNullable(getObjectMapper().writeValueAsString(object));
-        } catch (JsonProcessingException e) {
-            log.error("fail to parsed a JSON string to a Java object", e);
-        }
-        return Optional.empty();
     }
 
     private ObjectMapper getObjectMapper() {
@@ -293,4 +319,61 @@ public class JacksonUtil {
         return objectMapperBean == null ? DEFAULT_OBJECT_MAPPER : objectMapperBean;
     }
 
+    /**
+     * Checks that the Class object is not {@code null}
+     *
+     * @param objectClass the Class object to check for nullity
+     * @throws JacksonException if {@code obj} is {@code null}
+     */
+    private void requireClassNonNull(Class objectClass) {
+        if (objectClass == null) {
+            log.error("require object class not null");
+            throw JacksonException.throwWhenObjectClassNull();
+        }
+    }
+
+    /**
+     * Checks that the string is a json string or not.
+     * @param json
+     */
+    private void requireJsonString(String json) {
+        if (!isJson(json)) {
+            log.error("the parameter is not a json string. parameter[{}]", json);
+            throw JacksonException.throwWhenNotAJson();
+        }
+    }
+
+    /**
+     * Checks that the json string content is array or not.
+     * @param json
+     */
+    private void requireJsonArrayString(String json) {
+        if (!isJsonArray(json)) {
+            log.error("the json string content is not array. parameter[{}]", json);
+            throw JacksonException.throwWhenNotAJson();
+        }
+    }
+
+    /**
+     * Checks that the json string content is object or not.
+     * @param json
+     */
+    private void requireJsonObjectString(String json) {
+        if (!isJsonObject(json)) {
+            log.error("the json string content is not object. parameter[{}]", json);
+            throw JacksonException.throwWhenNotAJson();
+        }
+    }
+
+    /**
+     * Checks that the File is not {@code null}, and exists, and
+     * is a normal file, and the application can read the file denoted by this abstract pathname.
+     * @param jsonFile
+     */
+    private void requireLegalFile(File jsonFile) {
+        if (jsonFile == null || !jsonFile.exists() || !jsonFile.isFile() || !jsonFile.canRead()) {
+            log.error("file is not exists, or not a file, or can not read");
+            throw JacksonException.throwWhenFileIllegal();
+        }
+    }
 }

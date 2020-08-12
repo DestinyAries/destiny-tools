@@ -1,18 +1,16 @@
 # common-tool
 ## web tool
+#### entity
+1. HttpResponseEntity
+2. PageEntity
+3. ResultEntity
 
-## swagger tool
+#### exception handlers
 
-### 所需依赖
-```
-<dependency>
-    <groupId>com.destimy</groupId>
-    <artifactId>swagger-tool</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-</dependency>
-```
+## jackson
 
-### 用法
+## swagger helper
+#### 用法
 ##### [1] application 属性文件设置开关
 生产环境不启用，应为 false
 ```
@@ -48,7 +46,7 @@ public class SwaggerConfig {
 }
 ```
 
-### url path 匹配说明
+#### url path 匹配说明
 ##### [1] 包含型
 ```
 例如 url:
