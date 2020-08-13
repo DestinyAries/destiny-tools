@@ -11,7 +11,7 @@
 
 	<groupId>com.destiny</groupId>
 	<artifactId>log-tool</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>log-tool</name>
 	<description>Log tool is used to rid sensitive data and format to json</description>
 	<packaging>jar</packaging>
