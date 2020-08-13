@@ -3,6 +3,7 @@ package com.destiny.common.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,12 +23,18 @@ public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
      * @return
      */
     public static <T> T copyBean(Object source, Class<T> targetClass) {
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(targetClass);
+        if (!isBean(targetClass)) {
+            log.error("targetClass require be a bean");
+            return null;
+        }
         try {
             T targetObj = targetClass.newInstance();
             copyProperties(source, targetObj);
             return targetObj;
         } catch (InstantiationException e) {
-            log.error(e.getMessage(), e);
+            log.error("target class can not be instantiated", e);
         } catch (IllegalAccessException e) {
             log.error(e.getMessage(), e);
         }
@@ -42,7 +49,14 @@ public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
      * @return
      */
     public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
+        Objects.requireNonNull(sources);
+        Objects.requireNonNull(targetClass);
+        if (!isBean(targetClass)) {
+            log.error("targetClass require be a bean");
+            return null;
+        }
         return sources.stream().map((Function<Object, T>) o -> BeanUtil.copyBean(o, targetClass))
                 .collect(Collectors.toList());
     }
+
 }

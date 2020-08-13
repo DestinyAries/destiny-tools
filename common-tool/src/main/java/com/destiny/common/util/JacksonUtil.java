@@ -269,7 +269,6 @@ public class JacksonUtil {
         return (List<T>) list;
     }
 
-
     /**
      * Parsing a JSON string to a Map
      * @param json a JSON string
@@ -283,6 +282,30 @@ public class JacksonUtil {
             log.error("fail to parsed a JSON string to a Java Map", e);
             throw JacksonException.throwWhenProcessToJavaError(e);
         }
+    }
+
+    /**
+     * Parsing a JSON string to a Map
+     * @param json a JSON string
+     * @return
+     */
+    public <T> Map<T, Object> toMap(String json, Class<T> keyClass) {
+        requireClassNonNull(keyClass);
+        requireJsonObjectString(json);
+        Map map;
+        try {
+            map = getObjectMapper().readValue(json, new TypeReference<Map>(){});
+        } catch (JsonProcessingException e) {
+            log.error("fail to parsed a JSON string to a Java Map", e);
+            throw JacksonException.throwWhenProcessToJavaError(e);
+        }
+        // check class type
+        if (map != null && map.keySet().stream().anyMatch(v -> !keyClass.isInstance(v))) {
+            log.error("class cast error. expected:[{}], actual:[{}]", keyClass.getName(),
+                    map.keySet().stream().map(v -> v.getClass().getName()).distinct().collect(Collectors.joining(SymbolConstant.COMMA)));
+            throw JacksonException.throwWhenClassCastError();
+        }
+        return (Map<T, Object>) map;
     }
 
     /**
@@ -307,7 +330,11 @@ public class JacksonUtil {
     public String toJavaString(Object object) {
         try {
             String jsonString = getObjectMapper().writeValueAsString(object);
-            return jsonString.substring(1, jsonString.length() - 1);
+            if (StrUtil.isNotEmpty(jsonString) && StrUtil.startWith(jsonString, "\"")
+                    && StrUtil.endWith(jsonString, "\"")) {
+                return jsonString.substring(1, jsonString.length() - 1);
+            }
+            return jsonString;
         } catch (JsonProcessingException e) {
             log.error("fail to parsed a Java object to a Java string", e);
             throw JacksonException.throwWhenProcessToJavaError(e);

@@ -53,6 +53,26 @@ public class JacksonUtilTest {
     }
 
     @Test
+    @Order(2)
+    public void toJavaStringTest() {
+        String errorMsg = "JacksonUtil toJavaString error";
+        Assertions.assertEquals("null", JacksonUtil.of().toJavaString(null), errorMsg);
+        // String
+        Assertions.assertEquals("", JacksonUtil.of().toJavaString(""), errorMsg);
+        // Integer
+        Assertions.assertEquals("10", JacksonUtil.of().toJavaString(10), errorMsg);
+        // LocalDateTime
+        Assertions.assertEquals("2020-07-29 18:11:27.623", JacksonUtil.of().toJavaString(LocalDateTime.parse("2020-07-29T18:11:27.623")), errorMsg);
+        // Bean
+        Assertions.assertEquals(BEAN_JSON, JacksonUtil.of().toJavaString(new BeanForTest().init()), errorMsg);
+        // ArrayList
+        Assertions.assertEquals("[\"list string\",\"2020-07-29 18:11:27.623\"]", JacksonUtil.of().toJavaString(BeanForTest.testObjList()), errorMsg);
+        // HashMap
+        Assertions.assertEquals("{\"string key\":\"string value\",\"10\":\"int key\",\"datetime value\":\"2020-07-29 18:11:27.623\"}",
+                JacksonUtil.of().toJavaString(BeanForTest.testObjMap()), errorMsg);
+    }
+
+    @Test
     @Order(3)
     public void isJsonTest() {
         String notJsonString = "{\"str";
@@ -396,6 +416,59 @@ public class JacksonUtilTest {
                 map.toString(), errorMsg);
         Assertions.assertTrue(map.containsKey("name"), errorMsg);
         Assertions.assertEquals("张三", map.get("name").toString(), errorMsg);
+    }
+
+    @Test
+    @Order(5)
+    public void toMapReturnTypeKVTest() {
+        String errorMsg = "JacksonUtil toMap error";
+        String illegalTypeJson = "{hello, world}";
+        String listStringJson = "{\"list string\",\"2020-07-29 18:11:27.623\"}";
+        String listIntegerJson = "{1, 3, 5}";
+        // bean list length = 2
+        String mapBeanJson = "{\"name\":\"张三\",\"age\":10,\"sn\":13,\"amount\":2.307,\"num\":10,\"snLong\":30," +
+                "\"price\":13.57900000000000062527760746888816356658935546875,\"dateTime\":\"2020-07-29 18:11:27.623\"," +
+                "\"date\":\"2020-07-29\",\"time\":\"18:11:27.623\",\"objList\":null,\"objMap\":null}";
+
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(null, null), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(null, Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap("", Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap("[]", Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap("[{\"name\":\"}", Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap("{,\"objMap\":null}]", Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap("[,objMap\":null}]", Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(illegalTypeJson, Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(listStringJson, Object.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(listIntegerJson, Object.class), errorMsg);
+
+        Map<String, Object> emptyMap = JacksonUtil.of().toMap("{}", String.class);
+        Assertions.assertTrue(emptyMap != null && emptyMap.isEmpty(), errorMsg);
+
+        // --- json content is map ---
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(mapBeanJson, Integer.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(mapBeanJson, Map.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(mapBeanJson, List.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(mapBeanJson, Double.class), errorMsg);
+        Assertions.assertThrows(JacksonException.class, () -> JacksonUtil.of().toMap(mapBeanJson, Character.class), errorMsg);
+        // key is Object
+        Map<Object, Object> mapWithObjKey = JacksonUtil.of().toMap(mapBeanJson, Object.class);
+        Assertions.assertTrue(mapWithObjKey != null && !mapWithObjKey.isEmpty(), errorMsg);
+        // bean list - jackson parse it to a LinkedHashMap
+        Assertions.assertEquals("{name=张三, age=10, sn=13, amount=2.307, num=10, snLong=30, price=13.579, dateTime=2020-07-29 18:11:27.623, date=2020-07-29, time=18:11:27.623, objList=null, objMap=null}",
+                mapWithObjKey.toString(), errorMsg);
+        Assertions.assertTrue(mapWithObjKey.containsKey("name"), errorMsg);
+        Assertions.assertTrue(mapWithObjKey.keySet().stream().allMatch(v -> v instanceof Object), errorMsg);
+        Assertions.assertEquals("张三", mapWithObjKey.get("name").toString(), errorMsg);
+
+        // key is String
+        Map<String, Object> mapWithStrKey = JacksonUtil.of().toMap(mapBeanJson, String.class);
+        Assertions.assertTrue(mapWithStrKey != null && !mapWithStrKey.isEmpty(), errorMsg);
+        // bean list - jackson parse it to a LinkedHashMap
+        Assertions.assertEquals("{name=张三, age=10, sn=13, amount=2.307, num=10, snLong=30, price=13.579, dateTime=2020-07-29 18:11:27.623, date=2020-07-29, time=18:11:27.623, objList=null, objMap=null}",
+                mapWithStrKey.toString(), errorMsg);
+        Assertions.assertTrue(mapWithStrKey.containsKey("name"), errorMsg);
+        Assertions.assertTrue(mapWithStrKey.keySet().stream().allMatch(v -> v instanceof String), errorMsg);
+        Assertions.assertEquals("张三", mapWithStrKey.get("name").toString(), errorMsg);
     }
 
 }
