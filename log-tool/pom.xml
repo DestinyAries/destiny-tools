@@ -21,9 +21,20 @@
 		<logback.version>1.2.3</logback.version>
 		<fastjson.version>1.2.29</fastjson.version>
 		<logstash.logback.version>6.2</logstash.logback.version>
+		<commontool.version>1.0.0-SNAPSHOT</commontool.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.destiny</groupId>
+			<artifactId>common-tool</artifactId>
+			<version>${commontool.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -39,6 +50,11 @@
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-setting</artifactId>
+			<version>${hutool.version}</version>
 		</dependency>
 
 		<!-- Match ELK's LogStash filter configuration -->
@@ -64,13 +80,6 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<!--[Only for Test]-->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
