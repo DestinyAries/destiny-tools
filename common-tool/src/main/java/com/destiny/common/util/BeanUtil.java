@@ -1,8 +1,11 @@
 package com.destiny.common.util;
 
+import com.destiny.common.entity.PageEntity;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,6 +60,45 @@ public class BeanUtil extends cn.hutool.core.bean.BeanUtil {
         }
         return sources.stream().map((Function<Object, T>) o -> BeanUtil.copyBean(o, targetClass))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * page 拷贝
+     * @param sources
+     * @param targetClass
+     * @param <T>
+     * @return
+     */
+    public static <T> PageEntity<T> copyPage(PageInfo<?> sources, Class<T> targetClass) {
+        Objects.requireNonNull(sources);
+        Objects.requireNonNull(targetClass);
+        if (!isBean(targetClass)) {
+            log.error("targetClass require be a bean");
+            return null;
+        }
+
+        PageEntity pageEntity = new PageEntity();
+        copyProperties(sources, pageEntity);
+        if (sources.getList() == null || sources.getSize() == 0) {
+            return pageEntity;
+        }
+        pageEntity.setList(copyList(sources.getList(), targetClass));
+        return pageEntity;
+    }
+
+    /**
+     * 输出非空属性内容
+     * @param bean
+     * @return
+     */
+    public static String printNonNullProperty(Object bean) {
+        Objects.requireNonNull(bean);
+        if (!isBean(bean.getClass())) {
+            log.error("require be a bean");
+            return null;
+        }
+        Map<String, Object> map = beanToMap(bean, false, true);
+        return map == null ? null : bean.getClass().getSimpleName() + map.toString();
     }
 
 }

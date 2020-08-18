@@ -3,6 +3,7 @@ package com.destiny.common.entity;
 import com.destiny.common.enumeration.GlobalServerCodeEnum;
 import com.destiny.common.enumeration.ServerCode;
 import com.destiny.common.util.BeanUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiModel;
@@ -143,18 +144,19 @@ public class ResultEntity<T> implements Serializable {
         return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, CollectionUtils.isEmpty(list) ? Collections.EMPTY_LIST : list);
     }
 
-    public static <T> ResultEntity success(PageInfo pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyBean(pageInfo, PageEntity.class));
+    public static <T> ResultEntity success(PageInfo pageInfo, Class<T> targetClass) {
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, BeanUtil.copyPage(pageInfo, targetClass));
     }
 
-    public static <T> ResultEntity success(String message, PageInfo<T> pageInfo) {
-        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyBean(pageInfo, PageEntity.class));
+    public static <T> ResultEntity success(String message, PageInfo pageInfo, Class<T> targetClass) {
+        return new ResultEntity<>(GlobalServerCodeEnum.SUCCESS, message, BeanUtil.copyPage(pageInfo, targetClass));
     }
 
     /**
      * check the result is success or not
      * @return true-success; false-failure
      */
+    @JsonIgnore
     public boolean isSuccess() {
         return GlobalServerCodeEnum.SUCCESS.getCode().equals(this.code);
     }

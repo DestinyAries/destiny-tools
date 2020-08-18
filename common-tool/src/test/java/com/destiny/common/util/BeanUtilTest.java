@@ -2,6 +2,7 @@ package com.destiny.common.util;
 
 import com.destiny.common.entity.BeanForTest;
 import com.destiny.common.entity.BeanRespForTest;
+import com.github.pagehelper.PageInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -105,4 +106,37 @@ public class BeanUtilTest {
                         "dateTime=2020-08-13T18:11:27.623, date=2020-08-13, time=18:11:27.623, objList=[list string, 2020-08-13T18:11:27.623], objMap=null)]",
                 beanForTests.toString());
     }
+
+    @Test
+    public void copyPageTest() {
+        Assertions.assertThrows(NullPointerException.class, () -> BeanUtil.copyPage(null, null));
+        Assertions.assertThrows(NullPointerException.class, () -> BeanUtil.copyPage(new PageInfo<>(), null));
+        Assertions.assertThrows(NullPointerException.class, () -> BeanUtil.copyPage(null, BeanRespForTest.class));
+        Assertions.assertEquals("PageEntity(pageNum=0, pageSize=0, size=0, pages=0, nextPage=0, prePage=0, navigateFirstPage=0, navigateLastPage=0, startRow=0, endRow=0, total=0, list=null)",
+                BeanUtil.copyPage(new PageInfo<BeanForTest>(), BeanRespForTest.class).toString());
+        List<BeanForTest> beanForTests = new ArrayList<>();
+        beanForTests.add(new BeanForTest().init());
+        beanForTests.add(new BeanForTest());
+        PageInfo<BeanForTest> pageInfo = new PageInfo<>();
+        pageInfo.setSize(2);
+        pageInfo.setList(beanForTests);
+        Assertions.assertEquals("PageEntity(pageNum=0, pageSize=0, size=2, pages=0, nextPage=0, prePage=0, " +
+                        "navigateFirstPage=0, navigateLastPage=0, startRow=0, endRow=0, total=0, " +
+                        "list=[BeanRespForTest(name=张三, age=10, snLong=30, price=13.57900000000000062527760746888816356658935546875, " +
+                        "dateTime=2020-07-29T18:11:27.623, date=2020-07-29, time=18:11:27.623, objList=null, objMap=null), " +
+                        "BeanRespForTest(name=null, age=0, snLong=null, price=null, dateTime=null, date=null, time=null, " +
+                        "objList=null, objMap=null)])",
+                BeanUtil.copyPage(pageInfo, BeanRespForTest.class).toString());
+    }
+
+    @Test
+    public void printNonNullPropertyTest() {
+        Assertions.assertEquals(null, BeanUtil.printNonNullProperty("string"));
+        // 全空属性
+        Assertions.assertEquals("BeanRespForTest{}", BeanUtil.printNonNullProperty(new BeanRespForTest()));
+        // 有空属性
+        Assertions.assertEquals("BeanRespForTest{objMap={string key=string value, 10=int key, datetime value=2020-08-13T18:11:27.623}}",
+                BeanUtil.printNonNullProperty(new BeanRespForTest().setTestMap()));
+    }
+
 }
