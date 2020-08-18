@@ -53,8 +53,8 @@ public class HttpResponseEntity<T> extends ResponseEntity<ResultEntity> implemen
         return new HttpResponseEntity(ResultEntity.success(list));
     }
 
-    public static <T> HttpResponseEntity<T> success(PageInfo pageInfo) {
-        return new HttpResponseEntity(ResultEntity.success(pageInfo));
+    public static <T> HttpResponseEntity<T> success(PageInfo pageInfo, Class<T> targetClass) {
+        return new HttpResponseEntity(ResultEntity.success(pageInfo, targetClass));
     }
 
     public static <T> HttpResponseEntity<T> success(ResultEntity<T> resultEntity) {
