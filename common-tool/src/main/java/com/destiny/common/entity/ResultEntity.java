@@ -31,6 +31,9 @@ import java.util.List;
 public class ResultEntity<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "server code")
+    @JsonIgnore
+    private ServerCode serverCode;
     @ApiModelProperty(value = "the result status of handling")
     private String code;
 
@@ -58,6 +61,7 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public ResultEntity(ServerCode serverCode) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = serverCode.getMessage();
     }
@@ -68,41 +72,48 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public ResultEntity(ServerCode serverCode, String message) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = message;
     }
 
     public ResultEntity(ServerCode serverCode, T result) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = serverCode.getMessage();
         this.data = result;
     }
 
     public ResultEntity(ServerCode serverCode, String message, T result) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = message;
         this.data = result;
     }
 
     public ResultEntity(ServerCode serverCode, List<T> list) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = serverCode.getMessage();
         this.list = list;
     }
 
     public ResultEntity(ServerCode serverCode, String message, List<T> list) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = message;
         this.list = list;
     }
 
     public ResultEntity(ServerCode serverCode, PageEntity<T> pageList) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = serverCode.getMessage();
         this.pageList = pageList;
     }
 
     public ResultEntity(ServerCode serverCode, String message, PageEntity<T> pageList) {
+        this.serverCode = serverCode;
         this.code = serverCode.getCode();
         this.message = message;
         this.pageList = pageList;
@@ -117,15 +128,11 @@ public class ResultEntity<T> implements Serializable {
     }
 
     public static ResultEntity failure(ServerCode serverCode) {
-        return new ResultEntity(serverCode);
-    }
-
-    public static ResultEntity failure(String code, String message) {
-        return new ResultEntity(code, message);
+        return new ResultEntity(GlobalServerCodeEnum.SUCCESS == serverCode ? GlobalServerCodeEnum.UNKNOWN_EXCEPTION : serverCode);
     }
 
     public static ResultEntity failure(ServerCode serverCode, String message) {
-        return new ResultEntity(serverCode, message);
+        return new ResultEntity(GlobalServerCodeEnum.SUCCESS == serverCode ? GlobalServerCodeEnum.UNKNOWN_EXCEPTION : serverCode, message);
     }
 
     public static <T> ResultEntity<T> success(T data) {
@@ -158,6 +165,6 @@ public class ResultEntity<T> implements Serializable {
      */
     @JsonIgnore
     public boolean isSuccess() {
-        return GlobalServerCodeEnum.SUCCESS.getCode().equals(this.code);
+        return GlobalServerCodeEnum.SUCCESS == this.serverCode;
     }
 }

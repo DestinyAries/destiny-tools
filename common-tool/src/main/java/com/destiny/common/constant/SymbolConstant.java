@@ -9,6 +9,7 @@ public class SymbolConstant {
     public static final char CLOSE_BRACE_CHAR = '}';
     public static final char OPEN_BRACKET_CHAR = '[';
     public static final char CLOSE_BRACKET_CHAR = ']';
+    public static final char EQUAL_CHAR = '=';
 
     public static final String COMMA = ",";
     public static final String OPEN_PARENTHESIS = "(";

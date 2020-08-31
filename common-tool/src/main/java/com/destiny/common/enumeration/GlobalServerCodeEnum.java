@@ -14,7 +14,7 @@ public enum GlobalServerCodeEnum implements ServerCode {
     /**
      * 9999 系统未知异常
      */
-    UNKNOWN_EXCEPTION("9999", "未知异常"),
+    UNKNOWN_EXCEPTION("9999", "未知系统异常，请联系管理员"),
 
     // =================全局状态码=================
     /**
@@ -33,19 +33,24 @@ public enum GlobalServerCodeEnum implements ServerCode {
     REQUEST_UNAUTHORIZED("0003", "未被授权"),
 
     /**
-     * 0004 接口业务处理异常
+     * 0004 HTTP请求方法不支持
      */
-    API_HANDLE_EXCEPTION("0004", "接口异常，请联系管理员"),
+    REQUEST_METHOD_NOT_SUPPORT("0004", "HTTP请求方法不支持"),
 
     /**
-     * 0005 服务配置异常
+     * 0005 请求超时
      */
-    CONFIGURATION_EXCEPTION("0005", "服务配置异常"),
+    REQUEST_TIME_OUT("0005", "请求超时"),
 
     /**
-     * 0006 对象不存在
+     * 0006 请求的URL非法
      */
-    OBJECT_NOT_EXIST("0006", "对象不存在"),
+    REQUEST_URL_ILLEGAL("0006", "请求的URL非法"),
+
+    /**
+     * 0006 请求的URL连接失败
+     */
+    REQUEST_URL_CONNECT_FAILURE("0007", "请求的URL连接失败，请检查URL是否可连接"),
 
     ;
 
@@ -68,4 +73,11 @@ public enum GlobalServerCodeEnum implements ServerCode {
         return msg;
     }
 
+    public static boolean isRequestParamIllegal(String code) {
+        return REQUEST_PARAM_ILLEGAL.getCode().equals(code);
+    }
+
+    public static boolean isRequestSignatureError(String code) {
+        return REQUEST_SIGNATURE_ERROR.getCode().equals(code);
+    }
 }

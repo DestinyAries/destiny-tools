@@ -130,7 +130,7 @@ public class HttpResponseEntity<T> extends ResponseEntity<ResultEntity> implemen
      * @return
      */
     public static HttpResponseEntity serverError() {
-        return new HttpResponseEntity(ResultEntity.failure(GlobalServerCodeEnum.API_HANDLE_EXCEPTION), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new HttpResponseEntity(ResultEntity.failure(GlobalServerCodeEnum.UNKNOWN_EXCEPTION), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

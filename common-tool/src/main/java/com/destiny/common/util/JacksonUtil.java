@@ -342,8 +342,7 @@ public class JacksonUtil {
     }
 
     private ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapperBean = SpringBeanUtil.getBean("objectMapper", ObjectMapper.class);
-        return objectMapperBean == null ? DEFAULT_OBJECT_MAPPER : objectMapperBean;
+        return this.objectMapper == null ? DEFAULT_OBJECT_MAPPER : this.objectMapper;
     }
 
     /**
