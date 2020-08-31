@@ -5,7 +5,7 @@ package com.destiny.common.constant;
  * @Author Destiny
  * @Version 1.0.0
  */
-public final class CommonConstant {
+public class CommonConstant {
     /**
      * 默认分页大小
      */

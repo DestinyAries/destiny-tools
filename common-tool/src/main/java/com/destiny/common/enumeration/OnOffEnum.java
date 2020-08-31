@@ -1,7 +1,7 @@
 package com.destiny.common.enumeration;
 
 /**
- * 通用枚举
+ * 开关枚举
  * @Author Destiny
  * @Version 1.0.0
  */

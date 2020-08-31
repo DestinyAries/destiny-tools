@@ -2,7 +2,9 @@ package com.destiny.common.exception.enumeration;
 
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import javax.xml.bind.ValidationException;
 import java.util.Arrays;
@@ -18,6 +20,8 @@ public enum RequestExceptionEnum {
     VALIDATION(ValidationException.class),
     ARGUMENT_NOT_VALID(MethodArgumentNotValidException.class),
     HTTP_MESSAGE_CONVERSION(HttpMessageConversionException.class),
+    REQUEST_METHOD_NOT_SUPPORTED(HttpRequestMethodNotSupportedException.class),
+    REQUEST_PARAMETER_MISSING(MissingServletRequestParameterException.class),
     ;
 
     private Class<?> type;
